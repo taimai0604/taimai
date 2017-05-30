@@ -2,5 +2,15 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+  "weather": {
+    "host": "ds133211.mlab.com",
+    "port": 33211,
+    "url": "",
+    "database": "weather-tm",
+    "password": "123456789",
+    "name": "weather",
+    "user": "taimai",
+    "connector": "mongodb"
   }
 }
