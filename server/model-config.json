@@ -37,5 +37,17 @@
   },
   "Message": {
     "dataSource": null
+  },
+  "Type": {
+    "dataSource": "weather",
+    "public": true
+  },
+  "Device": {
+    "dataSource": "weather",
+    "public": true
+  },
+  "Config": {
+    "dataSource": "weather",
+    "public": true
   }
 }

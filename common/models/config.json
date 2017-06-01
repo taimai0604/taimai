@@ -1,0 +1,24 @@
+{
+  "name": "Config",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "accessToken": {
+      "type": "string"
+    },
+    "configId": {
+      "type": "number",
+      "required": true
+    },
+    "timeDelay": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Type",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "typeId": {
+      "type": "number",
+      "required": true,
+      "default": 0
+    },
+    "nameType": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
