@@ -1,0 +1,44 @@
+{
+  "name": "Environment",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "tempC": {
+      "type": "number"
+    },
+    "tempK": {
+      "type": "number"
+    },
+    "tempF": {
+      "type": "number"
+    },
+    "dewPoint": {
+      "type": "number"
+    },
+    "heatIndex": {
+      "type": "number"
+    },
+    "humidity": {
+      "type": "number"
+    },
+    "pressure": {
+      "type": "number"
+    },
+    "lightLevel": {
+      "type": "number"
+    },
+    "datedCreated": {
+      "type": "date"
+    },
+    "deviceId": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
