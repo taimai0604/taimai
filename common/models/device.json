@@ -8,8 +8,7 @@
   "properties": {
     "deviceId": {
       "type": "string",
-      "required": true,
-      "default": 0
+      "required": true
     },
     "nameDevice": {
       "type": "string"

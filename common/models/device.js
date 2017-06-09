@@ -1,50 +1,91 @@
 'use strict';
 var Particle = require('particle-api-js');
 var particle = new Particle();
-var token = "3e17a2f5f6c1cd55310c83e62d1546d91d32dac1";
-// var deviceId = "2e0027001247343339383037";
 
-var test = require("./test");
+var tm = require("./tm");
 var http = require('http');
 var request = require('request');
+
+var applyFilter = require('loopback-filters');
 
 module.exports = function (Device) {
     //add device
     Device.addDevice = function (data, cb) {
-        if(Object.keys(data).length && !data.id){// check object null
-            Device.create([data]);
-            cb(null,true);
-        }else{
-            cb(null,false);
+        if (Object.keys(data).length && !data.id) {// check object null
+            particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
+                // them duoi database
+                Device.findOrCreate({ deviceId: data.deviceId }, data, function (err, instance, created) {
+                    if (created && !err) {
+                        cb(null, true);
+                    } else {
+                        // da ton tai hoac co loi 
+                        cb(null, false);
+                    }
+                });
+            }, function (err) {
+                console.log('addDevice error!');
+                cb(null, false);
+            });
+        } else {
+            cb(null, false);
         }
     }
 
-     Device.remoteMethod(
+    Device.remoteMethod(
         'addDevice',
         {
             http: { path: '/addDevice', verb: 'post' },
-            accepts: {arg: 'data', type: 'object', http: { source: 'body' }},
+            accepts: { arg: 'data', type: 'object', http: { source: 'body' } },
             returns: { arg: 'result', type: 'boolean' },
         }
     );
 
 
-    //edit name device
-    Device.nameDevice = function (cb) {
-        console.log("edit name device");
+    //edit device
+    Device.editDevice = function (id, data, cb) {
+        particle.renameDevice({ deviceId: data.deviceId, name: data.nameDevice, auth: tm.getAccessToken() }).then(function (data1) {
+            Device.replaceById(id, data, function (err, instance) {
+                if (!err) {
+                    cb(null, true);
+                } else {
+                    cb(null, false);
+                }
+            });
+        }, function (err) {
+            console.log('An error occurred while renaming device:', err);
+            cb(null, false);
+        });
+
     }
+
+    Device.remoteMethod(
+        'editDevice',
+        {
+            http: { path: '/:id/editDevice', verb: 'post' },
+            accepts: [{ arg: 'id', type: 'string', required: true }, { arg: 'data', type: 'object', http: { source: 'body' } }],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
 
     //remove device
     Device.removeDevice = function (deviceId, cb) {
-        // particle.removeDevice({ deviceId: deviceId, auth: token }).then(function(data) {
-        // console.log('remove call response:', data);
-        // }, function(err) {
-        // console.log('An error occurred while removing:', err);
-        // });
         if (deviceId) {
-            console.log(deviceId);
+            particle.removeDevice({ deviceId: deviceId, auth: tm.getAccessToken() }).then(function (data) {
+                // xoa duoi database
+                Device.destroyAll({ deviceId: { like: deviceId } }, function (err, data) {
+                    if (!err) {
+                        cb(null, true);
+                    } else {
+                        cb(null, false);
+                    }
+                });
+            }, function (err) {
+                console.log('removeDevice error!');
+                cb(null, false);
+            });
+        } else {
+            cb(null, false);
         }
-        cb(null, true);
     }
     Device.remoteMethod(
         'removeDevice',
@@ -120,11 +161,35 @@ module.exports = function (Device) {
         'getListDevice',
         {
             http: { path: '/getListDevice', verb: 'get' },
-            returns: {type: 'array', root: true},
+            returns: { type: 'array', root: true },
         }
     );
 
-    // Device.beforeRemote('getListDevice', function () {
-    //     console.log("before remote get list device " + Date.now());
-    // });
+    //xem cac thong so o thoi gian hien tai
+    Device.getInfoEnv = function (deviceId, cb) {
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setCurrent', argument: '', auth: tm.getAccessToken() });
+        fnPr.then(
+            function (data) {
+                if (data.body.return_value == 1) {
+                    particle.getVariable({ deviceId: deviceId, name: 'enviCurrent', auth: tm.getAccessToken() }).then(function (data) {
+                        cb(null, data.body.result);
+                    }, function (err) {
+                        console.log('getInfoEnv error!');
+                        cb(null, null);
+                    });
+                }
+            }, function (err) {
+                console.log('getInfoEnv error!');
+                cb(null, null);
+            });
+    }
+
+    Device.remoteMethod(
+        'getInfoEnv',
+        {
+            http: { path: '/getInfoEnv', verb: 'get' },
+            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+            returns: { type: 'object', root: true },
+        }
+    );
 };

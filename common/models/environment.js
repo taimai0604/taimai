@@ -1,4 +1,9 @@
 'use strict';
+
+var Particle = require('particle-api-js');
+var particle = new Particle();
+var token = "3e17a2f5f6c1cd55310c83e62d1546d91d32dac1";
+
 var request = require('request');
 var api_key = "FYQOFWDRQ9JKGBFE";
 module.exports = function (Environment) {
@@ -32,4 +37,20 @@ module.exports = function (Environment) {
         }
     );
 
+    //get data
+    Environment.getDataAll = function (filter, cb) {
+        console.log(filter);
+        Environment.find({where:filter},function(err,data){
+            cb(null,data);
+        });
+    }
+
+    Environment.remoteMethod(
+        'getDataAll',
+        {
+            http: { path: '/getDataAll', verb: 'get' },
+            accepts: { arg: 'filter', type: 'object', http: { source: 'query' } },
+            returns: { type: 'array', root: true },
+        }
+    );
 };
