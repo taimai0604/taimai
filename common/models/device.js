@@ -45,6 +45,7 @@ module.exports = function (Device) {
     Device.editDevice = function (id, data, cb) {
         particle.renameDevice({ deviceId: data.deviceId, name: data.nameDevice, auth: tm.getAccessToken() }).then(function (data1) {
             Device.replaceById(id, data, function (err, instance) {
+                console.log(!err);
                 if (!err) {
                     cb(null, true);
                 } else {
@@ -52,7 +53,7 @@ module.exports = function (Device) {
                 }
             });
         }, function (err) {
-            console.log('An error occurred while renaming device:', err);
+            console.log('edit error!');
             cb(null, false);
         });
 

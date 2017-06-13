@@ -53,5 +53,9 @@
   "Environment": {
     "dataSource": "weather",
     "public": true
+  },
+  "Account": {
+    "dataSource": "weather",
+    "public": true
   }
 }
