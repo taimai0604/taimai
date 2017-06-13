@@ -6,8 +6,6 @@ var tm = require("./tm");
 var http = require('http');
 var request = require('request');
 
-var applyFilter = require('loopback-filters');
-
 module.exports = function (Device) {
     //add device
     Device.addDevice = function (data, cb) {
