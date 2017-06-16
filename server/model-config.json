@@ -46,10 +46,6 @@
     "dataSource": "weather",
     "public": true
   },
-  "Config": {
-    "dataSource": "weather",
-    "public": true
-  },
   "Environment": {
     "dataSource": "weather",
     "public": true
