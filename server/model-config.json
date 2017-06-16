@@ -57,5 +57,9 @@
   "Account": {
     "dataSource": "weather",
     "public": true
+  },
+  "ChartThingspeak": {
+    "dataSource": "weather",
+    "public": true
   }
 }

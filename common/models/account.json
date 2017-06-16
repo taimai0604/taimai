@@ -1,17 +1,11 @@
 {
   "name": "Account",
-  "base": "PersistedModel",
+  "base": "User",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "username": {
-      "type": "string"
-    },
-    "password": {
-      "type": "string"
-    },
     "fullName": {
       "type": "string"
     },
@@ -25,7 +19,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "devices": {
+      "type": "hasMany",
+      "model": "Device",
+      "foreignKey": "accountId"
+    }
+  },
   "acls": [],
   "methods": {}
 }
