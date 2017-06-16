@@ -4,13 +4,11 @@
     "connector": "memory"
   },
   "weather": {
-    "host": "127.0.0.1",
+    "host": "103.9.158.232",
     "port": 27017,
     "url": "",
     "database": "environment",
-    "password": "",
     "name": "weather",
-    "user": "root",
     "connector": "mongodb"
   }
 }
