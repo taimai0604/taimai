@@ -33,7 +33,7 @@
     "datedCreated": {
       "type": "date"
     },
-    "deviceId": {
+    "deviceIdParticle": {
       "type": "string"
     }
   },

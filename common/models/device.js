@@ -90,7 +90,7 @@ module.exports = function (Device) {
         'removeDevice',
         {
             http: { path: '/removeDevice', verb: 'post' },
-            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+            accepts: { arg: 'deviceId', type: 'string', required: true, http: { source: 'query' } },
             returns: { arg: 'result', type: 'boolean' },
         }
     );

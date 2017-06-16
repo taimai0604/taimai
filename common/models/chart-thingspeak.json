@@ -1,15 +1,11 @@
 {
   "name": "ChartThingspeak",
-  "base": "Model",
+  "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "chartId": {
-      "type": "number",
-      "required": true
-    },
     "name": {
       "type": "string"
     },
@@ -22,9 +18,6 @@
     "active": {
       "type": "boolean",
       "default": true
-    },
-    "deivceId": {
-      "type": "string"
     }
   },
   "validations": [],

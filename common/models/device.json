@@ -27,9 +27,6 @@
     },
     "description": {
       "type": "string"
-    },
-    "typeIdDevice": {
-      "type": "number"
     }
   },
   "validations": [],
@@ -38,6 +35,16 @@
       "type": "belongsTo",
       "model": "Account",
       "foreignKey": "accountId"
+    },
+    "chartThingspeaks": {
+      "type": "hasMany",
+      "model": "ChartThingspeak",
+      "foreignKey": ""
+    },
+    "environments": {
+      "type": "hasMany",
+      "model": "Environment",
+      "foreignKey": "deviceId"
     }
   },
   "acls": [],
