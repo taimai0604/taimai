@@ -4,38 +4,24 @@ var request = require('request');
 var app = require('../../server/server');
 
 module.exports = function (Environment) {
-    // Environment.addEnviroment = function (data, cb) {
-    //     var Device = app.models.Device;
-    //     Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
-    //         data.deviceId = device.id + "";
-    //         // them duoi database
-    //         Device.create(data, function (err, device) {
-    //             console.log(err);
-    //             console.log(device);
-    //             if (!err) {
-    //                 cb(null, true);
-    //             } else {
-    //                 // da ton tai hoac co loi 
-    //                 cb(null, false);
-    //             }
-    //         });
-    //     });
-    // }
 
-    // Environment.remoteMethod(
-    //     'addEnviroment',
-    //     {
-    //         http: { path: '/addEnviroment', verb: 'post' },
-    //         accepts: { arg: 'data', type: 'object', http: { source: 'body' } },
-    //         returns: { type: 'object', root: true },
-    //     }
-    // );
+    //handle create Environment
+    Environment.beforeRemote('create', function (context, user, next) {
+        var Device = app.models.Device;
+        Device.findOne({ where: { deviceId: { like: context.args.data.deviceIdParticle } } }, function (err, device) {
+            if (!err && device != null) {
+                context.args.data.deviceId = '' + device.id;
+                next();
+            }
+        });
+    });
 
     //truyen du lieu len thingspeak
     Environment.transferToThingSpeak = function (data, cb) {
         if (Object.keys(data).length && !data.id) {// check object null
             var Device = app.models.Device;
             Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
+                console.log(!err);
                 if (!err) {
                     console.log(data.deviceIdParticle);
                     var api_key = device.keyThingspeak;

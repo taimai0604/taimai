@@ -38,7 +38,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "device": {
+      "type": "belongsTo",
+      "model": "Device",
+      "foreignKey": "deviceId"
+    }
+  },
   "acls": [],
   "methods": {}
 }
