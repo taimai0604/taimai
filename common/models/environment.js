@@ -21,11 +21,8 @@ module.exports = function (Environment) {
         if (Object.keys(data).length && !data.id) {// check object null
             var Device = app.models.Device;
             Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
-                console.log(!err);
                 if (!err) {
-                    console.log(device);
                     var api_key = device.KeyThingspeak;
-                    console.log(api_key);
                     request.get({
                         url: "https://api.thingspeak.com/update?api_key=" + api_key
                         + "&field1=" + data.tempC
