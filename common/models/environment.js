@@ -8,10 +8,10 @@ module.exports = function (Environment) {
     //handle create Environment
     Environment.beforeRemote('create', function (context, user, next) {
         var Device = app.models.Device;
-        Device.findOne({ deviceId: { like: context.args.data.deviceId } }, function (err, device) {
+        Device.findOne({ where: { deviceId: { like: context.args.data.deviceIdParticle } } }, function (err, device) {
             if (!err) {
 
-                console.log(context.args.data.deviceId);
+                console.log(context.args.data.deviceIdParticle);
                 console.log(device.deviceId);
                 context.args.data.deviceIdParticle = device.deviceId;
             }
@@ -24,7 +24,7 @@ module.exports = function (Environment) {
     Environment.transferToThingSpeak = function (data, cb) {
         if (Object.keys(data).length && !data.id) {// check object null
             var Device = app.models.Device;
-            Device.findOne({where:{deviceId:{like:data.deviceIdParticle}}}, function (err, device) {
+            Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
                 if (err) {
                     console.log(data.deviceIdParticle);
                     var api_key = device.keyThingspeak;
@@ -42,7 +42,7 @@ module.exports = function (Environment) {
                             cb(null, true);
                         }
                     });
-                }else{
+                } else {
                     cb(null, false);
                 }
             });
