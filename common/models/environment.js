@@ -4,21 +4,32 @@ var request = require('request');
 var app = require('../../server/server');
 
 module.exports = function (Environment) {
+    // Environment.addEnviroment = function (data, cb) {
+    //     var Device = app.models.Device;
+    //     Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
+    //         data.deviceId = device.id + "";
+    //         // them duoi database
+    //         Device.create(data, function (err, device) {
+    //             console.log(err);
+    //             console.log(device);
+    //             if (!err) {
+    //                 cb(null, true);
+    //             } else {
+    //                 // da ton tai hoac co loi 
+    //                 cb(null, false);
+    //             }
+    //         });
+    //     });
+    // }
 
-    //handle create Environment
-    Environment.beforeRemote('create', function (context, user, next) {
-        var Device = app.models.Device;
-        Device.findOne({ where: { deviceId: { like: context.args.data.deviceIdParticle } } }, function (err, device) {
-            if (!err) {
-                console.log(device.id);
-                context.args.data.deviceId = device.id;
-            
-                console.log(context.args.data);
-            }
-        });
-
-        next();
-    });
+    // Environment.remoteMethod(
+    //     'addEnviroment',
+    //     {
+    //         http: { path: '/addEnviroment', verb: 'post' },
+    //         accepts: { arg: 'data', type: 'object', http: { source: 'body' } },
+    //         returns: { type: 'object', root: true },
+    //     }
+    // );
 
     //truyen du lieu len thingspeak
     Environment.transferToThingSpeak = function (data, cb) {
