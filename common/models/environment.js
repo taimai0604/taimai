@@ -10,8 +10,7 @@ module.exports = function (Environment) {
         var Device = app.models.Device;
         Device.findOne({ where: { deviceId: { like: context.args.data.deviceIdParticle } } }, function (err, device) {
             if (!err) {
-
-                console.log(context.args.data.deviceIdParticle);
+                console.log(context.args.data);
                 console.log(device.id);
                 context.args.data.deviceId = device.id;
             }
@@ -25,7 +24,7 @@ module.exports = function (Environment) {
         if (Object.keys(data).length && !data.id) {// check object null
             var Device = app.models.Device;
             Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
-                if (err) {
+                if (!err) {
                     console.log(data.deviceIdParticle);
                     var api_key = device.keyThingspeak;
                     console.log(api_key);
