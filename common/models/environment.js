@@ -10,9 +10,10 @@ module.exports = function (Environment) {
         var Device = app.models.Device;
         Device.findOne({ where: { deviceId: { like: context.args.data.deviceIdParticle } } }, function (err, device) {
             if (!err) {
-                console.log(context.args.data);
                 console.log(device.id);
-                context.args.data.deviceIdParticle = device.id;
+                context.args.data.deviceId = device.id;
+            
+                console.log(context.args.data);
             }
         });
 
