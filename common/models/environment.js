@@ -12,8 +12,8 @@ module.exports = function (Environment) {
             if (!err) {
 
                 console.log(context.args.data.deviceIdParticle);
-                console.log(device.deviceId);
-                context.args.data.deviceIdParticle = device.deviceId;
+                console.log(device.id);
+                context.args.data.deviceId = device.id;
             }
         });
 
