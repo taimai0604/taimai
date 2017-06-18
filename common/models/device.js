@@ -191,4 +191,56 @@ module.exports = function (Device) {
             returns: { type: 'object', root: true },
         }
     );
+
+    //set time delay
+    Device.setTimeDelay = function (deviceId, timeDelay, cb) {
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setTimeDelay', argument: ''+timeDelay, auth: tm.getAccessToken() });
+        fnPr.then(
+            function (data) {
+                console.log(timeDelay);
+                console.log("set time delay success");
+                cb(null, true);
+            }, function (err) {
+                console.log('getInfoEnv error!');
+                cb(null, false);
+            });
+    }
+
+    Device.remoteMethod(
+        'setTimeDelay',
+        {
+            http: { path: '/setTimeDelay', verb: 'get' },
+            accepts: [
+                { arg: 'deviceId', type: 'string', http: { source: 'query' }},
+                { arg: 'timeDelay', type: 'number', http: { source: 'query' }}
+                ],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+    //tat mo den
+    Device.controllerLed = function (deviceId, command, cb) {
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'controllLed', argument: command, auth: tm.getAccessToken() });
+        fnPr.then(
+            function (data) {
+                console.log(command);
+                console.log("controller led success");
+                cb(null, true);
+            }, function (err) {
+                console.log('getInfoEnv error!');
+                cb(null, false);
+            });
+    }
+
+    Device.remoteMethod(
+        'controllerLed',
+        {
+            http: { path: '/controllerLed', verb: 'get' },
+            accepts: [
+                { arg: 'deviceId', type: 'string', http: { source: 'query' }},
+                { arg: 'command', type: 'string', http: { source: 'query' }}
+                ],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
 };
