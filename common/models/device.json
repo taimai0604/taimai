@@ -13,6 +13,9 @@
     "nameDevice": {
       "type": "string"
     },
+    "keyThingspeak": {
+      "type": "string"
+    },
     "active": {
       "type": "boolean"
     },
