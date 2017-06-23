@@ -57,5 +57,9 @@
   "ChartThingspeak": {
     "dataSource": "weather",
     "public": true
+  },
+  "Test": {
+    "dataSource": "db",
+    "public": true
   }
 }
