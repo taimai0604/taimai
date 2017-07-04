@@ -194,7 +194,7 @@ module.exports = function (Device) {
 
     //set time delay
     Device.setTimeDelay = function (deviceId, timeDelay, cb) {
-        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setTimeDelay', argument: ''+timeDelay, auth: tm.getAccessToken() });
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setTimeDelay', argument: '' + timeDelay, auth: tm.getAccessToken() });
         fnPr.then(
             function (data) {
                 console.log(timeDelay);
@@ -211,9 +211,9 @@ module.exports = function (Device) {
         {
             http: { path: '/setTimeDelay', verb: 'get' },
             accepts: [
-                { arg: 'deviceId', type: 'string', http: { source: 'query' }},
-                { arg: 'timeDelay', type: 'number', http: { source: 'query' }}
-                ],
+                { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+                { arg: 'timeDelay', type: 'number', http: { source: 'query' } }
+            ],
             returns: { arg: 'result', type: 'boolean' },
         }
     );
@@ -237,9 +237,29 @@ module.exports = function (Device) {
         {
             http: { path: '/controllerLed', verb: 'get' },
             accepts: [
-                { arg: 'deviceId', type: 'string', http: { source: 'query' }},
-                { arg: 'command', type: 'string', http: { source: 'query' }}
-                ],
+                { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+                { arg: 'command', type: 'string', http: { source: 'query' } }
+            ],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+    // tinh trang den led
+    Device.isLed = function (deviceId, cb) {
+        particle.getVariable({ deviceId: deviceId, name: 'enviCurrent', auth: tm.getAccessToken() }).then(function (data) {
+            console.log(data.body.result);
+            cb(null, data.body.result);
+        }, function (err) {
+            console.log('isLed error!');
+            cb(null, null);
+        });
+    }
+
+    Device.remoteMethod(
+        'isLed',
+        {
+            http: { path: '/isLed', verb: 'get' },
+            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
             returns: { arg: 'result', type: 'boolean' },
         }
     );
