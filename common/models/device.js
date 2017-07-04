@@ -246,7 +246,7 @@ module.exports = function (Device) {
 
     // tinh trang den led
     Device.isLed = function (deviceId, cb) {
-        particle.getVariable({ deviceId: deviceId, name: 'enviCurrent', auth: tm.getAccessToken() }).then(function (data) {
+        particle.getVariable({ deviceId: deviceId, name: 'isLed', auth: tm.getAccessToken() }).then(function (data) {
             console.log(data.body.result);
             cb(null, data.body.result);
         }, function (err) {
