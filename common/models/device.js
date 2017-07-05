@@ -264,12 +264,12 @@ module.exports = function (Device) {
     );
 
       // tinh trang den led
-    Device.timeDelay = function (deviceId, cb) {
+    Device.getTimeDelay = function (deviceId, cb) {
         particle.getVariable({ deviceId: deviceId, name: 'timeDelay', auth: tm.getAccessToken() }).then(function (data) {
             cb(null, data.body.result);
         }, function (err) {
             console.log('timeDelay error!');
-            cb(null, null);
+            cb(null, -1);
         });
     }
 
