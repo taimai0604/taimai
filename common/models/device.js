@@ -247,7 +247,6 @@ module.exports = function (Device) {
     // tinh trang den led
     Device.isLed = function (deviceId, cb) {
         particle.getVariable({ deviceId: deviceId, name: 'isLed', auth: tm.getAccessToken() }).then(function (data) {
-            console.log(data.body.result);
             cb(null, data.body.result);
         }, function (err) {
             console.log('isLed error!');
@@ -261,6 +260,25 @@ module.exports = function (Device) {
             http: { path: '/isLed', verb: 'get' },
             accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
             returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+      // tinh trang den led
+    Device.timeDelay = function (deviceId, cb) {
+        particle.getVariable({ deviceId: deviceId, name: 'timeDelay', auth: tm.getAccessToken() }).then(function (data) {
+            cb(null, data.body.result);
+        }, function (err) {
+            console.log('timeDelay error!');
+            cb(null, null);
+        });
+    }
+
+    Device.remoteMethod(
+        'getTimeDelay',
+        {
+            http: { path: '/getTimeDelay', verb: 'get' },
+            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+            returns: { arg: 'result', type: 'number' },
         }
     );
 };
