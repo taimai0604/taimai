@@ -17,8 +17,6 @@ module.exports = function (Test) {
         })
     }
 
-
-
     //get data
     Test.test = function (cb) {
         pubnub.addListener({
@@ -50,7 +48,7 @@ module.exports = function (Test) {
         }
     );
 
-      Test.pub = function (content, cb) {
+    Test.pub = function (content, cb) {
 
         var publishConfig = {
             channel: "hello",
@@ -60,7 +58,7 @@ module.exports = function (Test) {
             console.log("pub");
             // console.log(status, response);
         })
-        cb(null,true);
+        cb(null, true);
     }
 
     Test.remoteMethod(
