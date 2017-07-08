@@ -5,7 +5,17 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "channel": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "deviceIdParticle": {
+      "type": "string"
+    }
+  },
   "validations": [],
   "relations": {},
   "acls": [],

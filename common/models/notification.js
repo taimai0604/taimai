@@ -6,29 +6,57 @@ module.exports = function (Notification) {
         publishKey: "pub-c-cd864c3f-3537-4adb-95d0-40c3fb8116bb"
     })
 
-    Notification.pub = function (channel, content, cb) {
-
+    //pub
+    Notification.publish = function (data, cb) {
         var publishConfig = {
-            channel: channel,
-            message: content
+            channel: data.channel+"-"+data.deviceIdParticle,
+            message: data.content
         }
         pubnub.publish(publishConfig, function (status, response) {
-            console.log("channel : " + channel);
-            console.log("pub message : " + content);
-            // console.log(status, response);
+            console.log("channel : " + data.channel+"-"+data.deviceIdParticle);
+            console.log("pub message : " + data.content);
         })
         cb(null, true);
     }
 
     Notification.remoteMethod(
-        'pub',
+        'publish',
         {
-            http: { path: '/pub', verb: 'get' },
+            http: { path: '/publish', verb: 'post' },
             accepts:
-            [
-                { arg: 'channel', type: 'string', http: { source: 'query' } },
-                { arg: 'content', type: 'string', http: { source: 'query' } }
-            ],
+            { arg: 'data', type: 'object', http: { source: 'body' } },
+            returns: { type: 'boolean', root: true },
+        }
+    );
+
+    // sub
+    Notification.sub = function (channel, cb) {
+        pubnub.addListener({
+            status: function (statusEvent) {
+                if (statusEvent.category === "PNConnectedCategory") {
+                    // publishSampleMessage();
+                }
+            },
+            message: function (message) {
+                console.log("New Message!!", message.message);
+            },
+            presence: function (presenceEvent) {
+                // handle presence
+            }
+        })
+        console.log("Subscribing..");
+        pubnub.subscribe({
+            channels: [channel]
+        });
+        cb(null, true);
+    }
+
+    Notification.remoteMethod(
+        'sub',
+        {
+            http: { path: '/sub', verb: 'get' },
+            accepts:
+            { arg: 'channel', type: 'string', http: { source: 'query' } },
             returns: { type: 'boolean', root: true },
         }
     );
