@@ -263,7 +263,7 @@ module.exports = function (Device) {
         }
     );
 
-      // tinh trang den led
+    // get time delay
     Device.getTimeDelay = function (deviceId, cb) {
         particle.getVariable({ deviceId: deviceId, name: 'timeDelay', auth: tm.getAccessToken() }).then(function (data) {
             cb(null, data.body.result);
@@ -279,6 +279,98 @@ module.exports = function (Device) {
             http: { path: '/getTimeDelay', verb: 'get' },
             accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
             returns: { arg: 'result', type: 'number' },
+        }
+    );
+
+
+
+    //set low  tempC
+    Device.setLowTemp = function (deviceId, lowTemp, cb) {
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setlTemp', argument: '' + lowTemp, auth: tm.getAccessToken() });
+        fnPr.then(
+            function (data) {
+                console.log(lowTemp);
+                console.log("set time delay success");
+                cb(null, true);
+            }, function (err) {
+                console.log('getInfoEnv error!');
+                cb(null, false);
+            });
+    }
+
+    Device.remoteMethod(
+        'setLowTemp',
+        {
+            http: { path: '/setLowTemp', verb: 'get' },
+            accepts: [
+                { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+                { arg: 'lowTemp', type: 'number', http: { source: 'query' } }
+            ],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+    // get low temp
+    Device.getLowTemp = function (deviceId, cb) {
+        particle.getVariable({ deviceId: deviceId, name: 'lowTemp', auth: tm.getAccessToken() }).then(function (data) {
+            cb(null, data.body.result);
+        }, function (err) {
+            console.log('getLowTemp error!');
+            cb(null, null);
+        });
+    }
+
+    Device.remoteMethod(
+        'getLowTemp',
+        {
+            http: { path: '/getLowTemp', verb: 'get' },
+            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+    //set low  tempC
+    Device.setHeightTemp = function (deviceId, heightTemp, cb) {
+        var fnPr = particle.callFunction({ deviceId: deviceId, name: 'sethTemp', argument: '' + heightTemp, auth: tm.getAccessToken() });
+        fnPr.then(
+            function (data) {
+                console.log(heightTemp);
+                console.log("set time delay success");
+                cb(null, true);
+            }, function (err) {
+                console.log('getInfoEnv error!');
+                cb(null, false);
+            });
+    }
+
+    Device.remoteMethod(
+        'setHeightTemp',
+        {
+            http: { path: '/setHeightTemp', verb: 'get' },
+            accepts: [
+                { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+                { arg: 'heightTemp', type: 'number', http: { source: 'query' } }
+            ],
+            returns: { arg: 'result', type: 'boolean' },
+        }
+    );
+
+     // get low temp
+    Device.getHeightTemp = function (deviceId, cb) {
+        particle.getVariable({ deviceId: deviceId, name: 'heightTemp', auth: tm.getAccessToken() }).then(function (data) {
+            cb(null, data.body.result);
+        }, function (err) {
+            console.log('getHeightTemp error!');
+            cb(null, null);
+        });
+    }
+
+    Device.remoteMethod(
+        'getHeightTemp',
+        {
+            http: { path: '/getHeightTemp', verb: 'get' },
+            accepts: { arg: 'deviceId', type: 'string', http: { source: 'query' } },
+            returns: { arg: 'result', type: 'boolean' },
         }
     );
 };
