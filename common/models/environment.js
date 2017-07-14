@@ -22,7 +22,7 @@ module.exports = function (Environment) {
             var Device = app.models.Device;
             Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
                 if (!err) {
-                    if (!device) {
+                    if (device != null) {
                         var api_key = device.KeyThingspeak;
                         request.get({
                             url: "https://api.thingspeak.com/update?api_key=" + api_key
