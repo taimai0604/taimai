@@ -22,7 +22,6 @@ module.exports = function (Environment) {
             var Device = app.models.Device;
             Device.findOne({ where: { deviceId: { like: data.deviceIdParticle } } }, function (err, device) {
                 if (!err) {
-                    console.log("key thing speak "+ device);
                     if (!device) {
                         var api_key = device.KeyThingspeak;
                         request.get({
