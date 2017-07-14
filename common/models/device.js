@@ -12,11 +12,12 @@ module.exports = function (Device) {
         if (Object.keys(data).length && !data.id) {// check object null
             particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
                 // them duoi database
-                Device.findOrCreate({ deviceId: data.deviceId }, data, function (err, instance, created) {
+                Device.findOrCreate({ where:{deviceId: { like: dataParticle.deviceID }} }, data, function (err, instance, created) {
                     if (created && !err) {
                         cb(null, true);
                     } else {
                         // da ton tai hoac co loi 
+                         console.log('addDevice database error!');
                         cb(null, false);
                     }
                 });
