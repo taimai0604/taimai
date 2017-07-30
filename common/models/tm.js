@@ -8,11 +8,3 @@ module.exports.getAccessToken = function (){
 module.exports.setAccessToken = function(access){
     this.accessToken = access;
 }
-
-module.exports.setTimeDelay = function(time){
-    this.time_delay = time;
-}
-
-module.exports.getTimeDelay = function(){
-    return this.time_delay;
-}
