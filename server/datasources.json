@@ -4,11 +4,13 @@
     "connector": "memory"
   },
   "weather": {
-    "host": "103.9.158.232",
-    "port": 27017,
+    "host": "ds133211.mlab.com",
+    "port": 33211,
     "url": "",
-    "database": "environment",
+    "database": "weather-tm",
+    "password": "123456789",
     "name": "weather",
+    "user": "taimai",
     "connector": "mongodb"
   }
 }
