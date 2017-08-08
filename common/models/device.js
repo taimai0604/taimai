@@ -34,7 +34,7 @@ module.exports = function (Device) {
                     json: Thingspeak
                 }, function (error, response, body) {
                     if (!error && response.statusCode == 200) {
-                        data.KeyThingspeak = body.api_keys[1].api_key;
+                        data.KeyThingspeak = body.api_keys[0].api_key;
                         data.channelID = body.id;
                         // them duoi database
                         Device.findOrCreate({ where: { deviceId: { like: dataParticle.deviceID } } }, data, function (err, instance, created) {
