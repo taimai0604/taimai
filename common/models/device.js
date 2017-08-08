@@ -10,21 +10,47 @@ module.exports = function (Device) {
     //add device
     Device.addDevice = function (data, cb) {
         if (Object.keys(data).length && !data.id) {// check object null
-            particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
-                // them duoi database
-                Device.findOrCreate({ where:{deviceId: { like: dataParticle.deviceID }} }, data, function (err, instance, created) {
-                    if (created && !err) {
-                        cb(null, true);
-                    } else {
-                        // da ton tai hoac co loi 
-                         console.log('addDevice database error!');
-                        cb(null, false);
-                    }
-                });
-            }, function (err) {
-                console.log('addDevice error!');
-                cb(null, false);
+            // particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
+            //     // them duoi database
+            //     Device.findOrCreate({ where:{deviceId: { like: dataParticle.deviceID }} }, data, function (err, instance, created) {
+            //         if (created && !err) {
+            //create thingspeak
+            var Thingspeak = {};
+            Thingspeak.api_key = tm.getApiThingspeak;
+            Thingspeak.name = data.nameDevice;
+            Thingspeak.description = "";
+            Thingspeak.latitude = data.latitude;
+            Thingspeak.longitude = data.longitude;
+            Thingspeak.public_flag = true;
+            Thingspeak.field1 = "tempC";
+            Thingspeak.field2 = "dewPoint";
+            Thingspeak.field3 = "heatIndex";
+            Thingspeak.field4 = "humidity";
+            Thingspeak.field5 = "pressure";
+            Thingspeak.field6 = "lightLevel";
+
+            request.post({
+                headers: { 'content-type': 'application/json' },
+                url: "https://api.thingspeak.com/channels.json",
+                body: Thingspeak
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    cb(null, true);
+                }else{
+                    cb(null, false);
+                }
             });
+
+            //         } else {
+            //             // da ton tai hoac co loi 
+            //              console.log('addDevice database error!');
+            //             cb(null, false);
+            //         }
+            //     });
+            // }, function (err) {
+            //     console.log('addDevice error!');
+            //     cb(null, false);
+            // });
         } else {
             cb(null, false);
         }
@@ -356,7 +382,7 @@ module.exports = function (Device) {
         }
     );
 
-     // get low temp
+    // get low temp
     Device.getHeightTemp = function (deviceId, cb) {
         particle.getVariable({ deviceId: deviceId, name: 'heightTemp', auth: tm.getAccessToken() }).then(function (data) {
             cb(null, data.body.result);

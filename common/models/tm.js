@@ -1,4 +1,5 @@
 var accessToken = "";
+var apiThingspeak = "";
 var time_delay;
 
 module.exports.getAccessToken = function (){
@@ -7,4 +8,12 @@ module.exports.getAccessToken = function (){
 
 module.exports.setAccessToken = function(access){
     this.accessToken = access;
+}
+
+module.exports.getApiThingspeak = function (){
+    return this.apiThingspeak;
+}
+
+module.exports.setApiThingspeak = function(apiKey){
+    this.apiThingspeak = apiKey;
 }
