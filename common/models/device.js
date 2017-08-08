@@ -117,32 +117,43 @@ module.exports = function (Device) {
     );
 
     //remove device
-    Device.removeDevice = function (deviceId, channelID, cb) {
+    Device.removeDevice = function (deviceId, deviceIdParticle, channelID, cb) {
         if (deviceId) {
-            particle.removeDevice({ deviceId: deviceId, auth: tm.getAccessToken() }).then(function (data) {
+            particle.removeDevice({ deviceId: deviceIdParticle, auth: tm.getAccessToken() }).then(function (data) {
                 // xoa duoi database
-                Device.destroyAll({ deviceId: { like: deviceId } }, function (err, data) {
+                Device.destroyAll({ deviceId: { like: deviceIdParticle } }, function (err, data) {
                     if (!err) {
                         // delete thingspeak
                         request.delete({
                             headers: { 'content-type': 'application/json' },
                             url: "https://api.thingspeak.com/channels/" + channelID,
                             json: {
-                                'api_key': tm.getApiThingspeak
+                                'api_key': tm.getApiThingspeak()
                             }
                         }, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
-                                cb(null, true);
+                                var ChartThingspeak = app.models.ChartThingspeak;
+                                ChartThingspeak.destroyAll({ deviceId: deviceId }, function (err, data) {
+                                    if (!err) {
+                                        cb(null, true);
+                                    } else {
+                                        console.log('remove charts  error!');
+                                        cb(null, false);
+                                    }
+                                });
                             } else {
+                                console.log('removeDevice thingspeak error!');
                                 cb(null, false);
                             }
+
                         });
                     } else {
+                        console.log('removeDevice database error!');
                         cb(null, false);
                     }
                 });
             }, function (err) {
-                console.log('removeDevice error!');
+                console.log('removeDevice particle error!');
                 cb(null, false);
             });
         } else {
@@ -155,6 +166,7 @@ module.exports = function (Device) {
             http: { path: '/removeDevice', verb: 'post' },
             accepts: [
                 { arg: 'deviceId', type: 'string', required: true, http: { source: 'query' } },
+                { arg: 'deviceIdParticle', type: 'string', required: true, http: { source: 'query' } },
                 { arg: 'channelID', type: 'number', http: { source: 'query' } }
             ],
             returns: { arg: 'result', type: 'boolean' },
