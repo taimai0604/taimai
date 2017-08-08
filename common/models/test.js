@@ -1,6 +1,8 @@
 'use strict';
 var PubNub = require('pubnub');
 var request = require('request');
+
+var app = require('../../server/server');
 module.exports = function (Test) {
     var pubnub = new PubNub({
         subscribeKey: "sub-c-c8dbb904-57bc-11e7-af75-02ee2ddab7fe",
@@ -73,13 +75,14 @@ module.exports = function (Test) {
     //
     // get list channel thingspeak
     Test.getListChannelThingspeak = function (cb) {
-        request.get({
-            url: "https://api.thingspeak.com/channels.json?api_key=SJ4PGADN6D128M13"
-        }, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                cb(null, body);
-            }
-        });
+        // request.get({
+        //     url: "https://api.thingspeak.com/channels.json?api_key=SJ4PGADN6D128M13"
+        // }, function (error, response, body) {
+        //     if (!error && response.statusCode == 200) {
+        //         cb(null, body);
+        //     }
+        // });
+        console.log();
     }
 
     Test.remoteMethod(

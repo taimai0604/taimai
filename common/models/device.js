@@ -6,51 +6,74 @@ var tm = require("./tm");
 var http = require('http');
 var request = require('request');
 
+var app = require('../../server/server');
+
 module.exports = function (Device) {
     //add device
     Device.addDevice = function (data, cb) {
         if (Object.keys(data).length && !data.id) {// check object null
-            // particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
-            //     // them duoi database
-            //     Device.findOrCreate({ where:{deviceId: { like: dataParticle.deviceID }} }, data, function (err, instance, created) {
-            //         if (created && !err) {
-            //create thingspeak
-            var Thingspeak = {};
-            Thingspeak.api_key = tm.getApiThingspeak;
-            Thingspeak.name = data.nameDevice;
-            Thingspeak.description = "";
-            Thingspeak.latitude = data.latitude;
-            Thingspeak.longitude = data.longitude;
-            Thingspeak.public_flag = true;
-            Thingspeak.field1 = "tempC";
-            Thingspeak.field2 = "dewPoint";
-            Thingspeak.field3 = "heatIndex";
-            Thingspeak.field4 = "humidity";
-            Thingspeak.field5 = "pressure";
-            Thingspeak.field6 = "lightLevel";
+            particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
+                //create thingspeak
+                var Thingspeak = {};
+                Thingspeak.api_key = tm.getApiThingspeak();
+                Thingspeak.name = data.nameDevice;
+                Thingspeak.description = "";
+                Thingspeak.latitude = data.latitude + "";
+                Thingspeak.longitude = data.longitude + "";
+                Thingspeak.public_flag = true;
+                Thingspeak.field1 = "tempC";
+                Thingspeak.field2 = "dewPoint";
+                Thingspeak.field3 = "heatIndex";
+                Thingspeak.field4 = "humidity";
+                Thingspeak.field5 = "pressure";
+                Thingspeak.field6 = "lightLevel";
 
-            request.post({
-                headers: { 'content-type': 'application/json' },
-                url: "https://api.thingspeak.com/channels.json",
-                body: Thingspeak
-            }, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    cb(null, true);
-                }else{
-                    cb(null, false);
-                }
+                request.post({
+                    headers: { 'content-type': 'application/json' },
+                    url: "https://api.thingspeak.com/channels.json",
+                    json: Thingspeak
+                }, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        data.KeyThingspeak = body.api_keys[1].api_key;
+                        data.channelID = body.id;
+                        // them duoi database
+                        Device.findOrCreate({ where: { deviceId: { like: dataParticle.deviceID } } }, data, function (err, instance, created) {
+                            if (created && !err) {
+                                //create chart thingspeak
+                                var ChartThingspeak = app.models.ChartThingspeak;
+                                var listName = ['tempC', 'dewPoint', 'heatIndex', 'humidity', 'pressure', 'lightLevel'];
+                                var charts = [];
+                                for (var i = 0; i < listName.length; i++) {
+                                    charts.push({
+                                        'name': listName[i],
+                                        'content': '<iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/' + data.channelID + '/charts/' + (i + 1) + '?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>',
+                                        'description': '',
+                                        'active': true,
+                                        'deviceId': instance.id
+                                    });
+                                }
+                                ChartThingspeak.create(charts, function (err, obj) {
+                                    if (!err) {
+                                        cb(null, true);
+                                    } else {
+                                        cb(null, false);
+                                    }
+                                });
+                            } else {
+                                // da ton tai hoac co loi 
+                                console.log('addDevice database error!');
+                                cb(null, false);
+                            }
+                        });
+                    } else {
+                        cb(null, false);
+                    }
+                });
+
+            }, function (err) {
+                console.log('addDevice error!');
+                cb(null, false);
             });
-
-            //         } else {
-            //             // da ton tai hoac co loi 
-            //              console.log('addDevice database error!');
-            //             cb(null, false);
-            //         }
-            //     });
-            // }, function (err) {
-            //     console.log('addDevice error!');
-            //     cb(null, false);
-            // });
         } else {
             cb(null, false);
         }
@@ -94,13 +117,26 @@ module.exports = function (Device) {
     );
 
     //remove device
-    Device.removeDevice = function (deviceId, cb) {
+    Device.removeDevice = function (deviceId, channelID, cb) {
         if (deviceId) {
             particle.removeDevice({ deviceId: deviceId, auth: tm.getAccessToken() }).then(function (data) {
                 // xoa duoi database
                 Device.destroyAll({ deviceId: { like: deviceId } }, function (err, data) {
                     if (!err) {
-                        cb(null, true);
+                        // delete thingspeak
+                        request.delete({
+                            headers: { 'content-type': 'application/json' },
+                            url: "https://api.thingspeak.com/channels/" + channelID,
+                            json: {
+                                'api_key': tm.getApiThingspeak
+                            }
+                        }, function (error, response, body) {
+                            if (!error && response.statusCode == 200) {
+                                cb(null, true);
+                            } else {
+                                cb(null, false);
+                            }
+                        });
                     } else {
                         cb(null, false);
                     }
@@ -117,7 +153,10 @@ module.exports = function (Device) {
         'removeDevice',
         {
             http: { path: '/removeDevice', verb: 'post' },
-            accepts: { arg: 'deviceId', type: 'string', required: true, http: { source: 'query' } },
+            accepts: [
+                { arg: 'deviceId', type: 'string', required: true, http: { source: 'query' } },
+                { arg: 'channelID', type: 'number', http: { source: 'query' } }
+            ],
             returns: { arg: 'result', type: 'boolean' },
         }
     );

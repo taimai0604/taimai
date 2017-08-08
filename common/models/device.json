@@ -16,6 +16,9 @@
     "keyThingspeak": {
       "type": "string"
     },
+    "channelID": {
+      "type": "number"
+    },
     "active": {
       "type": "boolean"
     },
