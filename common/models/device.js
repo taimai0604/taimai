@@ -2,36 +2,36 @@
 var Particle = require('particle-api-js');
 var particle = new Particle();
 
-var tm = require("./tm");
+var tm = require('./tm');
 var http = require('http');
 var request = require('request');
 
 var app = require('../../server/server');
 
 module.exports = function (Device) {
-    //add device
+    // add device
     Device.addDevice = function (data, cb) {
-        if (Object.keys(data).length && !data.id) {// check object null
+        if (Object.keys(data).length && !data.id) { // check object null
             particle.claimDevice({ deviceId: data.deviceId, auth: tm.getAccessToken() }).then(function (dataParticle) {
-                //create thingspeak
+                // create thingspeak
                 var Thingspeak = {};
                 Thingspeak.api_key = tm.getApiThingspeak();
                 Thingspeak.name = data.nameDevice;
-                Thingspeak.description = "";
-                Thingspeak.latitude = data.latitude + "";
-                Thingspeak.longitude = data.longitude + "";
+                Thingspeak.description = '';
+                Thingspeak.latitude = data.latitude + '';
+                Thingspeak.longitude = data.longitude + '';
                 Thingspeak.public_flag = true;
-                Thingspeak.field1 = "tempC";
-                Thingspeak.field2 = "dewPoint";
-                Thingspeak.field3 = "heatIndex";
-                Thingspeak.field4 = "humidity";
-                Thingspeak.field5 = "pressure";
-                Thingspeak.field6 = "lightLevel";
+                Thingspeak.field1 = 'tempC';
+                Thingspeak.field2 = 'dewPoint';
+                Thingspeak.field3 = 'heatIndex';
+                Thingspeak.field4 = 'humidity';
+                Thingspeak.field5 = 'pressure';
+                Thingspeak.field6 = 'lightLevel';
 
                 request.post({
                     headers: { 'content-type': 'application/json' },
-                    url: "https://api.thingspeak.com/channels.json",
-                    json: Thingspeak
+                    url: 'https://api.thingspeak.com/channels.json',
+                    json: Thingspeak,
                 }, function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         data.KeyThingspeak = body.api_keys[0].api_key;
@@ -39,7 +39,7 @@ module.exports = function (Device) {
                         // them duoi database
                         Device.findOrCreate({ where: { deviceId: { like: dataParticle.deviceID } } }, data, function (err, instance, created) {
                             if (created && !err) {
-                                //create chart thingspeak
+                                // create chart thingspeak
                                 var ChartThingspeak = app.models.ChartThingspeak;
                                 var listName = ['tempC', 'dewPoint', 'heatIndex', 'humidity', 'pressure', 'lightLevel'];
                                 var charts = [];
@@ -49,7 +49,7 @@ module.exports = function (Device) {
                                         'content': '<iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/' + data.channelID + '/charts/' + (i + 1) + '?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>',
                                         'description': '',
                                         'active': true,
-                                        'deviceId': instance.id
+                                        'deviceId': instance.id,
                                     });
                                 }
                                 ChartThingspeak.create(charts, function (err, obj) {
@@ -60,7 +60,7 @@ module.exports = function (Device) {
                                     }
                                 });
                             } else {
-                                // da ton tai hoac co loi 
+                                // da ton tai hoac co loi
                                 console.log('addDevice database error!');
                                 cb(null, false);
                             }
@@ -69,7 +69,6 @@ module.exports = function (Device) {
                         cb(null, false);
                     }
                 });
-
             }, function (err) {
                 console.log('addDevice error!');
                 cb(null, false);
@@ -77,7 +76,7 @@ module.exports = function (Device) {
         } else {
             cb(null, false);
         }
-    }
+    };
 
     Device.remoteMethod(
         'addDevice',
@@ -88,8 +87,7 @@ module.exports = function (Device) {
         }
     );
 
-
-    //edit device
+    // edit device
     Device.editDevice = function (id, data, cb) {
         particle.renameDevice({ deviceId: data.deviceId, name: data.nameDevice, auth: tm.getAccessToken() }).then(function (data1) {
             Device.replaceById(id, data, function (err, instance) {
@@ -104,8 +102,7 @@ module.exports = function (Device) {
             console.log('edit error!');
             cb(null, false);
         });
-
-    }
+    };
 
     Device.remoteMethod(
         'editDevice',
@@ -116,7 +113,7 @@ module.exports = function (Device) {
         }
     );
 
-    //remove device
+    // remove device
     Device.removeDevice = function (deviceId, deviceIdParticle, channelID, cb) {
         if (deviceId) {
             particle.removeDevice({ deviceId: deviceIdParticle, auth: tm.getAccessToken() }).then(function (data) {
@@ -126,10 +123,10 @@ module.exports = function (Device) {
                         // delete thingspeak
                         request.delete({
                             headers: { 'content-type': 'application/json' },
-                            url: "https://api.thingspeak.com/channels/" + channelID,
+                            url: 'https://api.thingspeak.com/channels/' + channelID,
                             json: {
-                                'api_key': tm.getApiThingspeak()
-                            }
+                                'api_key': tm.getApiThingspeak(),
+                            },
                         }, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
                                 var ChartThingspeak = app.models.ChartThingspeak;
@@ -145,7 +142,6 @@ module.exports = function (Device) {
                                 console.log('removeDevice thingspeak error!');
                                 cb(null, false);
                             }
-
                         });
                     } else {
                         console.log('removeDevice database error!');
@@ -159,7 +155,7 @@ module.exports = function (Device) {
         } else {
             cb(null, false);
         }
-    }
+    };
     Device.remoteMethod(
         'removeDevice',
         {
@@ -167,13 +163,13 @@ module.exports = function (Device) {
             accepts: [
                 { arg: 'deviceId', type: 'string', required: true, http: { source: 'query' } },
                 { arg: 'deviceIdParticle', type: 'string', required: true, http: { source: 'query' } },
-                { arg: 'channelID', type: 'number', http: { source: 'query' } }
+                { arg: 'channelID', type: 'number', http: { source: 'query' } },
             ],
             returns: { arg: 'result', type: 'boolean' },
         }
     );
 
-    //get list device
+    // get list device
     Device.getListDevice = function (cb) {
         Device.find({}, function (err, devices) {
             cb(null, devices);
@@ -217,8 +213,7 @@ module.exports = function (Device) {
         //     });
         // }).end();
 
-
-        // // request server 
+        // // request server
         // request.get({ url: "http://localhost:3000/api/Configs" }, function (error, response, body) {
         //     if (!error && response.statusCode == 200) {
         //         // console.log(body);
@@ -242,7 +237,7 @@ module.exports = function (Device) {
         }
     );
 
-    //xem cac thong so o thoi gian hien tai
+    // xem cac thong so o thoi gian hien tai
     Device.getInfoEnv = function (deviceId, cb) {
         var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setCurrent', argument: '', auth: tm.getAccessToken() });
         fnPr.then(
@@ -259,7 +254,7 @@ module.exports = function (Device) {
                 console.log('getInfoEnv error!');
                 cb(null, null);
             });
-    }
+    };
 
     Device.remoteMethod(
         'getInfoEnv',
@@ -270,19 +265,19 @@ module.exports = function (Device) {
         }
     );
 
-    //set time delay
+    // set time delay
     Device.setTimeDelay = function (deviceId, timeDelay, cb) {
         var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setTimeDelay', argument: '' + timeDelay, auth: tm.getAccessToken() });
         fnPr.then(
             function (data) {
                 console.log(timeDelay);
-                console.log("set time delay success");
+                console.log('set time delay success');
                 cb(null, true);
             }, function (err) {
                 console.log('getInfoEnv error!');
                 cb(null, false);
             });
-    }
+    };
 
     Device.remoteMethod(
         'setTimeDelay',
@@ -290,25 +285,25 @@ module.exports = function (Device) {
             http: { path: '/setTimeDelay', verb: 'get' },
             accepts: [
                 { arg: 'deviceId', type: 'string', http: { source: 'query' } },
-                { arg: 'timeDelay', type: 'number', http: { source: 'query' } }
+                { arg: 'timeDelay', type: 'number', http: { source: 'query' } },
             ],
             returns: { arg: 'result', type: 'boolean' },
         }
     );
 
-    //tat mo den
+    // tat mo den
     Device.controllerLed = function (deviceId, command, cb) {
         var fnPr = particle.callFunction({ deviceId: deviceId, name: 'controllLed', argument: command, auth: tm.getAccessToken() });
         fnPr.then(
             function (data) {
                 console.log(command);
-                console.log("controller led success");
+                console.log('controller led success');
                 cb(null, true);
             }, function (err) {
                 console.log('getInfoEnv error!');
                 cb(null, false);
             });
-    }
+    };
 
     Device.remoteMethod(
         'controllerLed',
@@ -316,7 +311,7 @@ module.exports = function (Device) {
             http: { path: '/controllerLed', verb: 'get' },
             accepts: [
                 { arg: 'deviceId', type: 'string', http: { source: 'query' } },
-                { arg: 'command', type: 'string', http: { source: 'query' } }
+                { arg: 'command', type: 'string', http: { source: 'query' } },
             ],
             returns: { arg: 'result', type: 'boolean' },
         }
@@ -330,7 +325,7 @@ module.exports = function (Device) {
             console.log('isLed error!');
             cb(null, null);
         });
-    }
+    };
 
     Device.remoteMethod(
         'isLed',
@@ -349,7 +344,7 @@ module.exports = function (Device) {
             console.log('timeDelay error!');
             cb(null, -1);
         });
-    }
+    };
 
     Device.remoteMethod(
         'getTimeDelay',
@@ -360,21 +355,19 @@ module.exports = function (Device) {
         }
     );
 
-
-
-    //set low  tempC
+    // set low  tempC
     Device.setLowTemp = function (deviceId, lowTemp, cb) {
         var fnPr = particle.callFunction({ deviceId: deviceId, name: 'setlTemp', argument: '' + lowTemp, auth: tm.getAccessToken() });
         fnPr.then(
             function (data) {
                 console.log(lowTemp);
-                console.log("set time delay success");
+                console.log('set time delay success');
                 cb(null, true);
             }, function (err) {
                 console.log('getInfoEnv error!');
                 cb(null, false);
             });
-    }
+    };
 
     Device.remoteMethod(
         'setLowTemp',
@@ -382,7 +375,7 @@ module.exports = function (Device) {
             http: { path: '/setLowTemp', verb: 'get' },
             accepts: [
                 { arg: 'deviceId', type: 'string', http: { source: 'query' } },
-                { arg: 'lowTemp', type: 'number', http: { source: 'query' } }
+                { arg: 'lowTemp', type: 'number', http: { source: 'query' } },
             ],
             returns: { arg: 'result', type: 'boolean' },
         }
@@ -396,7 +389,7 @@ module.exports = function (Device) {
             console.log('getLowTemp error!');
             cb(null, null);
         });
-    }
+    };
 
     Device.remoteMethod(
         'getLowTemp',
@@ -407,19 +400,19 @@ module.exports = function (Device) {
         }
     );
 
-    //set low  tempC
+    // set low  tempC
     Device.setHeightTemp = function (deviceId, heightTemp, cb) {
         var fnPr = particle.callFunction({ deviceId: deviceId, name: 'sethTemp', argument: '' + heightTemp, auth: tm.getAccessToken() });
         fnPr.then(
             function (data) {
                 console.log(heightTemp);
-                console.log("set time delay success");
+                console.log('set time delay success');
                 cb(null, true);
             }, function (err) {
                 console.log('getInfoEnv error!');
                 cb(null, false);
             });
-    }
+    };
 
     Device.remoteMethod(
         'setHeightTemp',
@@ -427,7 +420,7 @@ module.exports = function (Device) {
             http: { path: '/setHeightTemp', verb: 'get' },
             accepts: [
                 { arg: 'deviceId', type: 'string', http: { source: 'query' } },
-                { arg: 'heightTemp', type: 'number', http: { source: 'query' } }
+                { arg: 'heightTemp', type: 'number', http: { source: 'query' } },
             ],
             returns: { arg: 'result', type: 'boolean' },
         }
@@ -441,7 +434,7 @@ module.exports = function (Device) {
             console.log('getHeightTemp error!');
             cb(null, null);
         });
-    }
+    };
 
     Device.remoteMethod(
         'getHeightTemp',
